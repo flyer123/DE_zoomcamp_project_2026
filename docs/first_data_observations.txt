@@ -1,0 +1,106 @@
+################################
+Table flight:
+
+candidat for primary key - id
+
+adep, ades are foreign keys
+
+190 duplicated rows
+
+column types:
+timestamps:
+dof
+unixtime (currently numric)
+first_seen
+last_seen
+
+categorical:
+model
+typecode
+icao_aircraft_class
+icao_operator
+
+
+numeric:
+unix_time
+
+
+observations and future actions:
+model - requires standartization
+typecode? - check
+remove adep=ades
+remove adep is null, ades in null
+
+
+Percentage of null columns:
+id                     0.000000
+icao24                 0.000000
+flt_id                 0.088905
+dof                    0.000000
+adep                   0.508084
+ades                   0.466102
+adep_p                 0.297802
+ades_p                 0.297802
+registration           0.111361
+model                  0.357314
+typecode               0.113208
+icao_aircraft_class    0.250014
+icao_operator          0.441079
+first_seen             0.000000
+last_seen              0.000000
+version                0.000000
+unix_time              0.000000
+
+
+
+
+dtypes:
+id                             uint64
+icao24                            str
+flt_id                            str
+dof                    datetime64[us]
+adep                              str
+ades                              str
+adep_p                            str
+ades_p                            str
+registration                      str
+model                             str
+typecode                          str
+icao_aircraft_class               str
+icao_operator                     str
+first_seen             datetime64[us]
+last_seen              datetime64[us]
+version                           str
+unix_time                       int64
+but it will be conveted to csv, so - all str
+
+
+#######################################
+Table airports:
+
+ident will be primary key
+
+column types:
+id                     int64
+ident                    str
+type                     str
+name                     str
+latitude_deg         float64
+longitude_deg        float64
+elevation_ft         float64
+continent                str
+iso_country              str
+iso_region               str
+municipality             str
+scheduled_service        str
+icao_code                str
+iata_code                str
+gps_code                 str
+local_code               str
+home_link                str
+wikipedia_link           str
+keywords                 str
+
+no duplicates
+
+
