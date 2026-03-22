@@ -1,0 +1,43 @@
+flight table
+1 - deduplicate based on id and first seen and last seen
+2 - timestamps values
+ferst_seen, last_seen: TIMESTAMP_NTZ
+dof - DATE
+unixtime - BIGINT
+delete is null:
+id
+adep
+ades
+icao_24
+first_seen
+last_seen
+dof
+unix_time
+
+delete:
+adep=ades
+
+empty
+icao_operator
+
+
+nulls
+registration
+model
+typecode
+icao_aircraft_class
+adep_p
+ades_p
+
+uppercase - adep, ades
+
+Airports table
+ident must be not null
+
+name must be not null
+
+
+float
+latitude_deg
+longitude_deg
+elevation_ft

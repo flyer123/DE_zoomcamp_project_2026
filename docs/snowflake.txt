@@ -1,0 +1,83 @@
+1. Create the Custom Role
+
+create ssh key
+    cd ~/.ssh
+    openssl genrsa 2048 | openssl pkcs8 -topk8 -inform PEM -out snowflake_tf_snow_key.p8 -nocrypt
+    openssl rsa -in snowflake_tf_snow_key.p8 -pubout -out snowflake_tf_snow_key.pub
+
+
+    CREATE ROLE TERRAFORM_MANAGER;
+
+2. Grant Minimal Privileges
+Grant only the necessary privileges for creating and managing databases and schemas:
+
+       -- Allow creation of databases
+       GRANT CREATE DATABASE ON ACCOUNT TO ROLE TERRAFORM_MANAGER;
+
+       -- Allow creation of schemas in all databases (or specify a database)
+       GRANT CREATE SCHEMA ON ALL DATABASES IN ACCOUNT TO ROLE TERRAFORM_MANAGER;
+
+       -- Allow usage on all databases (needed to access databases)
+       GRANT USAGE ON ALL DATABASES IN ACCOUNT TO ROLE TERRAFORM_MANAGER;
+
+       -- Optionally, grant ownership on schemas they create
+       GRANT ALL ON ALL SCHEMAS IN DATABASE <database_name> TO ROLE TERRAFORM_MANAGER;
+       
+       
+Note: Replace <database_name> with the actual database name if you want to restrict to a specific database.
+
+3. Assign the Role to the User
+
+       -- Create the user (if not already exists)
+       CREATE USER TERRAFORM_USER PASSWORD = '...';
+
+       -- Assign the role to the user
+       GRANT ROLE TERRAFORM_MANAGER TO USER TERRAFORM_USER;
+
+       -- Set the role as default for the user
+       ALTER USER TERRAFORM_USER SET DEFAULT_ROLE = TERRAFORM_MANAGER;
+       
+       
+#####################################
+Actual snowflake code.
+1) create database flight_analytics;
+
+
+
+CREATE ROLE TERRAFORM_MANAGER;
+
+GRANT CREATE SCHEMA ON DATABASE FLIGHT_ANALYTICS TO ROLE TERRAFORM_MANAGER;
+
+GRANT USAGE ON DATABASE FLIGHT_ANALYTICS TO ROLE TERRAFORM_MANAGER;
+
+GRANT ALL ON ALL SCHEMAS IN DATABASE FLIGHT_ANALYTICS TO ROLE TERRAFORM_MANAGER;
+
+GRANT CREATE WAREHOUSE ON ACCOUNT TO ROLE TERRAFORM_MANAGER;
+
+create terraform user
+USE ROLE ACCOUNTADMIN;
+
+CREATE USER TERRAFORM_SVC
+    TYPE = SERVICE
+    COMMENT = "Service user for Terraforming Snowflake"
+    RSA_PUBLIC_KEY = "<RSA_PUBLIC_KEY_HERE>";
+    
+grant role:
+GRANT ROLE TERRAFORM_MANAGER TO USER TERRAFORM_SVC
+
+import created database:
+terraform import snowflake_database.db FLIGHT_ANALYTICS
+
+
+not to add
+
+org - kghyamb
+
+account - sxb47565
+    
+    
+
+
+
+
+

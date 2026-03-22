@@ -213,3 +213,12 @@ data/
 *.parquet
 *.csv
 *.gz
+
+# terraform
+*.terraform*
+*.tfstate
+*.tfstate.*
+*.terraform.lock.hcl
+
+# ssh
+*.p8

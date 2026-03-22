@@ -72,7 +72,7 @@ first_seen             datetime64[us]
 last_seen              datetime64[us]
 version                           str
 unix_time                       int64
-but it will be conveted to csv, so - all str
+but it will be conveted to csv, so - all str in bronze layer
 
 
 #######################################
