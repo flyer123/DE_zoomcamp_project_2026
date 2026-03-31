@@ -69,11 +69,7 @@ import created database:
 terraform import snowflake_database.db FLIGHT_ANALYTICS
 
 
-not to add
 
-org - kghyamb
-
-account - sxb47565
     
     
 
