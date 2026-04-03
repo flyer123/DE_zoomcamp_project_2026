@@ -222,3 +222,7 @@ data/
 
 # ssh
 *.p8
+
+# airflow
+airflow/logs
+airflow/dags/__pycache__

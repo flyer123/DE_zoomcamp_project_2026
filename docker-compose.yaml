@@ -1,5 +1,23 @@
 version: "3.9"
 
+
+x-airflow-common: &airflow-common
+  image: apache/airflow:2.9.1
+  environment:
+    &airflow-env
+    AIRFLOW__CORE__EXECUTOR: LocalExecutor
+    AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__WEBSERVER__SECRET_KEY: 'secret'
+  volumes:
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/logs:/opt/airflow/logs
+    - ./airflow/plugins:/opt/airflow/plugins
+    - ./ingestion:/opt/airflow/ingestion
+  depends_on:
+    - postgres
+
 services:
   jupyter:
     container_name: jupyter
@@ -10,15 +28,69 @@ services:
       - ./notebooks:/home/jovyan/work
       - ./data:/home/jovyan/data
 
+  # -----------------------
+  # Postgres (Airflow DB)
+  # -----------------------
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres-db-volume:/var/lib/postgresql/data
+
+  # -----------------------
+  # Airflow Init
+  # -----------------------
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    command: >
+      -c "
+      airflow db init &&
+      airflow users create \
+        --username admin \
+        --password admin \
+        --firstname admin \
+        --lastname admin \
+        --role Admin \
+        --email admin@example.com
+      "
+
+  # -----------------------
+  # Airflow Webserver
+  # -----------------------
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "8080:8080"
+    restart: always
+
+  # -----------------------
+  # Airflow Scheduler
+  # -----------------------
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    restart: always
+
+  # -----------------------
+  # MinIO (S3)
+  # -----------------------
   minio:
     image: minio/minio
-    container_name: minio
-    command: server /data
+    command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
-    volumes:
-      - ./minio_data:/data
     ports:
       - "9000:9000"
       - "9001:9001"
+    volumes:
+      - minio-data:/data
+
+volumes:
+  postgres-db-volume:
+  minio-data:
