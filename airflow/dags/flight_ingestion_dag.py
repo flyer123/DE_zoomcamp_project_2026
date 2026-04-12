@@ -78,6 +78,9 @@ with DAG(
 
         if df.empty:
             raise ValueError("Empty dataset")
+        
+        null_ratio = df["first_seen"].isnull().mean()
+        assert  null_ratio < 0.2, "Too many null timestamps!"
 
         logging.info(f"Rows: {len(df)}")
         logging.info(f"Columns: {list(df.columns)}")
