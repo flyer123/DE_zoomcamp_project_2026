@@ -126,42 +126,51 @@ services:
   # -------------------------
   # SPARK MASTER
   # -------------------------
+  # Spark Master
   spark-master:
     build: ./spark
+    container_name: spark-master
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master", "--host", "spark-master", "--port", "7077", "--webui-port", "8088"]
+    environment:
+      SPARK_MASTER_HOST: spark-master
+      SPARK_MASTER_PORT: 7077
+      SPARK_MASTER_WEBUI_PORT: 8088
+    ports:
+      - "7077:7077"  # Spark Master port
+      - "8088:8088"  # Spark Master Web UI (avoiding 8080 which Airflow uses)
+    volumes:
+      - ./spark/jobs:/opt/spark-jobs
+      - ./spark/logs:/opt/spark/logs
     networks:
       - airflow-spark-network
-    command: >
-      bash -c "
-      /opt/spark/sbin/start-master.sh &&
-      tail -f /dev/null
-      "
-    environment:
-      - SPARK_MODE=master
-      - SPARK_MASTER_HOST=spark-master
-      - SPARK_MASTER_PORT=7077
-    ports:
-      - "7077:7077"
-      - "8081:8080"
-    volumes:
-      - ./spark/jobs:/opt/spark/jobs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   # -------------------------
   # SPARK WORKER
   # -------------------------
   spark-worker:
     build: ./spark
+    container_name: spark-worker
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    depends_on:
+      spark-master:
+        condition: service_healthy
+    environment:
+      SPARK_WORKER_CORES: 2
+      SPARK_WORKER_MEMORY: 2g
+      SPARK_WORKER_PORT: 8881
+      SPARK_WORKER_WEBUI_PORT: 8089
+    ports:
+      - "8089:8089"  # Spark Worker Web UI
+    volumes:
+      - ./spark/jobs:/opt/spark-jobs
+      - ./spark/logs:/opt/spark/logs
     networks:
       - airflow-spark-network
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-    command: >
-      bash -c "
-      /opt/spark/sbin/start-worker.sh spark://spark-master:7077 &&
-      tail -f /dev/null
-      "
-    depends_on:
-      - spark-master
 
 volumes:
   postgres-db-volume:

@@ -18,7 +18,12 @@ with DAG(
     tags=["spark", "transform"],
 ) as dag:
 
-    spark_job = BashOperator(
-        task_id="run_spark_job",
-        bash_command="spark-submit --master spark://spark-master:7077 /opt/airflow/spark_jobs/clean_flights.py",
-    )
+    sspark_job = BashOperator(
+    task_id="run_spark_job",
+    bash_command="""
+    /opt/spark/bin/spark-submit \
+      --master spark://spark-master:7077 \
+      --packages org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262 \
+      /opt/airflow/spark_jobs/clean_flights.py
+    """,
+)
