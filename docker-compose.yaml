@@ -25,12 +25,15 @@ x-airflow-common: &airflow-common
     - ./airflow/plugins:/opt/airflow/plugins
     - ./ingestion:/opt/airflow/ingestion
     - ./spark/jobs:/opt/airflow/spark_jobs
+    - /var/run/docker.sock:/var/run/docker.sock
 
   depends_on:
     postgres:
       condition: service_healthy
 
   user: "50000:50000"
+  group_add:
+    - "137" # Replace it with the GID of the host's docker group
 
 services:
 
