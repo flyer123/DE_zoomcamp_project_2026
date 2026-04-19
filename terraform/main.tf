@@ -29,17 +29,17 @@ resource "snowflake_database" "db" {
 
 
 # create schema raw
-resource "snowflake_schema" "raw" {
-  database = snowflake_database.db.name
-  name     = "RAW"
-}
+#resource "snowflake_schema" "raw" {
+#  database = snowflake_database.db.name
+#  name     = "RAW"
+#}
 
 
 # create schema bronze
-resource "snowflake_schema" "bronze" {
-  database = snowflake_database.db.name
-  name     = "BRONZE"
-}
+# resource "snowflake_schema" "bronze" {
+#   database = snowflake_database.db.name
+#  name     = "BRONZE"
+#}
 
 # create schema silver
 resource "snowflake_schema" "silver" {

@@ -18,9 +18,13 @@ RUN curl -L -o /opt/airflow/hadoop-aws-${HADOOP_AWS_VERSION}.jar \
     curl -L -o /opt/airflow/aws-java-sdk-bundle-${AWS_SDK_VERSION}.jar \
     https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/${AWS_SDK_VERSION}/aws-java-sdk-bundle-${AWS_SDK_VERSION}.jar
 
+
+
 ENV SPARK_CLASSPATH="/opt/airflow/hadoop-aws-${HADOOP_AWS_VERSION}.jar:/opt/airflow/aws-java-sdk-bundle-${AWS_SDK_VERSION}.jar"
 
 ENV SPARK_HOME=/opt/spark-3.5.0-bin-hadoop3
 ENV PATH=$SPARK_HOME/bin:$PATH
 
 USER airflow
+
+RUN pip install apache-airflow-providers-snowflake boto3

@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 spark = SparkSession.builder \
     .appName("flight-cleaning") \
-    .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000") \
+    .config("spark.hadoop.fs.s3a.endpoint", "http://172.19.0.4:9000") \
     .config("spark.hadoop.fs.s3a.access.key", "minio") \
     .config("spark.hadoop.fs.s3a.secret.key", "minio123") \
     .config("spark.hadoop.fs.s3a.path.style.access", "true") \
@@ -30,9 +30,8 @@ df_clean = df \
     .withColumn("first_seen_ts", to_timestamp("first_seen")) \
     .filter(col("first_seen_ts").isNotNull()) \
     .withColumn("icao24", col("icao24").cast("string")) \
-    .withColumn("callsign", col("callsign").cast("string")) \
-    .withColumn("estdepartureairport", upper(col("estdepartureairport"))) \
-    .withColumn("estarrivalairport", upper(col("estarrivalairport")))
+    .withColumn("ADEP", upper(col("adep"))) \
+    .withColumn("ADES", upper(col("ades")))
 
 # -------------------------
 # PARTITIONS

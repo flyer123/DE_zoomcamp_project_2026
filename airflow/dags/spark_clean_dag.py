@@ -20,5 +20,5 @@ with DAG(
 
     spark_job = BashOperator(
     task_id="run_spark_job",
-    bash_command="docker run --rm --network=host -v /home/jurii/Projects/flight_analytic_pipeline/spark/jobs:/opt/spark-jobs flight_analytic_pipeline_spark-master:latest spark-submit --master spark://172.19.0.4:7077 --packages org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262 /opt/spark-jobs/clean_flights.py",
+    bash_command="docker run --rm --network=host -v /home/jurii/Projects/flight_analytic_pipeline/spark/jobs:/opt/spark-jobs flight_analytic_pipeline_spark-master:latest spark-submit --master spark://172.19.0.2:7077 --packages org.apache.hadoop:hadoop-aws:3.3.4,com.amazonaws:aws-java-sdk-bundle:1.12.262 /opt/spark-jobs/clean_flights.py",
 )

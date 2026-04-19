@@ -10,7 +10,7 @@ adep, ades are foreign keys
 column types:
 timestamps:
 dof
-unixtime (currently numric)
+unixtime (currently numeric)
 first_seen
 last_seen
 

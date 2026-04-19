@@ -116,7 +116,8 @@ services:
     image: minio/minio
     command: server /data --console-address ":9001"
     networks:
-      - airflow-spark-network
+      airflow-spark-network:
+        ipv4_address: 172.19.0.4 # better to force it to avoid network issues
     environment:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: minio123
@@ -135,7 +136,7 @@ services:
     container_name: spark-master
     command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master", "--host", "spark-master", "--port", "7077", "--webui-port", "8088"]
     environment:
-      SPARK_MASTER_HOST: spark-master
+      SPARK_MASTER_HOST: 172.19.0.2 
       SPARK_MASTER_PORT: 7077
       SPARK_MASTER_WEBUI_PORT: 8088
     ports:
@@ -145,7 +146,8 @@ services:
       - ./spark/jobs:/opt/spark-jobs
       - ./spark/logs:/opt/spark/logs
     networks:
-      - airflow-spark-network
+      airflow-spark-network:
+        ipv4_address: 172.19.0.2 # better to force it to avoid network issues
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8088"]
       interval: 30s
@@ -158,7 +160,7 @@ services:
   spark-worker:
     build: ./spark
     container_name: spark-worker
-    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
+    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://172.19.0.2:7077"]
     depends_on:
       spark-master:
         condition: service_healthy
@@ -181,3 +183,7 @@ volumes:
 
 networks:
   airflow-spark-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.19.0.0/24
